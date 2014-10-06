@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link type="text/css" rel="stylesheet" href="/static/jquery-ui.css" media="">
+	<script type="text/javascript" src="/static/jquery.js" charset="UTF-8"></script>
+	<link type="text/css" rel="stylesheet" href="/static/style.css" media="">
+	<script type="text/javascript" async="" src="http://www.google-analytics.com/analytics.js"></script>
+	<script id="facebook-jssdk" async="" src="//connect.facebook.net/en_US/sdk.js"></script>
+</head>
+<body>
+	<button id="face-blogin" type="button" class="btn-face fbConnectButton"><div class="icon-btn-face"></div>Conectar</button>
+	<div id="res"></div>
+	<div id="ventanitas" style="color:red;"></div>
+	<script src="/static/utils.js"></script>
+	<script src="/static/window.open.js"></script>
+	<!-- 
+	Utilidad para sobreescribir la función window.open 
+	Nos permite saber las ventanas que se abren.
+	-->
+	<script type="text/javascript">
+	var openedWindows = [];
+	var fbWindows = [];
+	// Callback de ventana abierta
+	function onWindowOpen(url, name, params, new_window) {
+		$('#ventanitas').append(url);
+		// Filtra la petición oauth a facebook
+		if (url.contains('facebook.com') 
+			&& url.contains('oauth')) {
+			fbWindows.push(new_window);
+		}
+	    openedWindows.push(new_window);
+	}
+	</script>
+	<script type="text/javascript">
+	$('body').on('click', '.fbConnectButton', function(e) {
+
+		FB.login(function(response) {
+			//Intento de inicio de sesión
+			// eventsAnalytics.pushEvent('user', 'fblogin', 'try');
+			if(response.authResponse) {
+				//Inicio exitoso
+				// eventsAnalytics.pushEvent('user', 'fblogin', 'done');
+				var extraParams = '';
+				$('#res').html("Usuario obtenido");
+				//Redirección de la ventana de Facebook si es que no ha sido cerrada.
+				var fbwin = fbWindows[0];
+				var redirect_url = ''
+				fbwin.location = redirect_url;
+
+				
+			}
+		},
+		{scope: 'email,publish_stream,user_birthday'});
+	});
+	</script>
+	<script type="text/javascript">
+	window.fbAsyncInit = function() {
+		FB.init({
+			appId   : '626400314139571',
+			version	: 'v2.1',
+			cookie	: true,
+			status	: true,
+			xfbml   : true,
+			oauth 	: true
+	    });
+		FB.getLoginStatus(function(response) {
+		  if (response.status === 'connected') {
+		    // the user is logged in and has authenticated your
+		    // app, and response.authResponse supplies
+		    // the user's ID, a valid access token, a signed
+		    // request, and the time the access token 
+		    // and signed request each expire
+		    var uid = response.authResponse.userID;
+		    var accessToken = response.authResponse.accessToken;
+		    $('#res').html("Usuario conectado");
+		  } else if (response.status === 'not_authorized') {
+		    // the user is logged in to Facebook, 
+		    // but has not authenticated your app
+		  } else {
+		    // the user isn't logged in to Facebook.
+		  }
+		});
+	};
+	(function(d){
+		var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+		if (d.getElementById(id)) {return;}
+		js = d.createElement('script'); js.id = id; js.async = true;
+		js.src = "//connect.facebook.net/en_US/sdk.js";
+		ref.parentNode.insertBefore(js, ref);
+	}(document));
+	</script>
+</body>
+</html>
