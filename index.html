@@ -2,22 +2,41 @@
 <html lang="es">
 <head>
 	<meta charset="UTF-8">
-	<title>Document</title>
+	<title>Facebook login</title>
+	
+	<!-- jQuery UI - CSS -->
 	<link type="text/css" rel="stylesheet" href="/static/jquery-ui.css" media="">
-	<script type="text/javascript" src="/static/jquery.js" charset="UTF-8"></script>
+
+	<!-- CSS -->
 	<link type="text/css" rel="stylesheet" href="/static/style.css" media="">
-	<script type="text/javascript" async="" src="http://www.google-analytics.com/analytics.js"></script>
+
+	<!-- jQuery - Javascript -->
+	<script type="text/javascript" src="/static/jquery.js" charset="UTF-8"></script>
+
+	<!-- <script type="text/javascript" async="" src="http://www.google-analytics.com/analytics.js"></script> -->
+	
+	<!-- FB javascript SDK -->
 	<script id="facebook-jssdk" async="" src="//connect.facebook.net/en_US/sdk.js"></script>
 </head>
 <body>
+	
+	<!-- Botón que tiene el evento para login -->
 	<button id="face-blogin" type="button" class="btn-face fbConnectButton"><div class="icon-btn-face"></div>Conectar</button>
+	
+	<!-- En este div #res se muestra el estado de conexión con Facebook (si un usuario tiene iniciada su sesión) -->
 	<div id="res"></div>
+	
+	<!-- En este div #ventanitas se muestra la URL de los sitios que abren nuevas ventanas de navegador  -->
 	<div id="ventanitas" style="color:red;"></div>
+
+	<!-- Utilidades en general de scripts -->
 	<script src="/static/utils.js"></script>
+
+	<!-- Utilidad para evento de abrir una ventana (ver onWindowOpen) -->
 	<script src="/static/window.open.js"></script>
+
 	<!-- 
-	Utilidad para sobreescribir la función window.open 
-	Nos permite saber las ventanas que se abren.
+	Función que se llama al abrirse una nueva ventana (/static/window.open.js)
 	-->
 	<script type="text/javascript">
 	var openedWindows = [];
@@ -34,9 +53,14 @@
 	}
 	</script>
 	<script type="text/javascript">
+	// Ventana principal
+	var mainWin = window;
+
+	// Callback del botón de Facebook
 	$('body').on('click', '.fbConnectButton', function(e) {
 
 		FB.login(function(response) {
+
 			//Intento de inicio de sesión
 			// eventsAnalytics.pushEvent('user', 'fblogin', 'try');
 			if(response.authResponse) {
@@ -44,12 +68,16 @@
 				// eventsAnalytics.pushEvent('user', 'fblogin', 'done');
 				var extraParams = '';
 				$('#res').html("Usuario obtenido");
-				//Redirección de la ventana de Facebook si es que no ha sido cerrada.
+
+				// Redirección de la ventana de Facebook si es que no ha sido cerrada.
+				// Ver función onWindowOpen
 				var fbwin = fbWindows[0];
+
+				// Redirección de la ventana de Facebook
+				// Ésto solo sucederá si la ventana no pudo ser cerrada
+				// Si la ventana se cerró, esto simplemente no se ejecutará.
 				var redirect_url = ''
 				fbwin.location = redirect_url;
-
-				
 			}
 		},
 		{scope: 'email,publish_stream,user_birthday'});
@@ -57,6 +85,7 @@
 	</script>
 	<script type="text/javascript">
 	window.fbAsyncInit = function() {
+		// Se inicializa el FB sdk
 		FB.init({
 			appId   : '626400314139571',
 			version	: 'v2.1',
@@ -65,6 +94,8 @@
 			xfbml   : true,
 			oauth 	: true
 	    });
+
+	    // Obtenemos el status del login del usuario
 		FB.getLoginStatus(function(response) {
 		  if (response.status === 'connected') {
 		    // the user is logged in and has authenticated your
